@@ -6,10 +6,9 @@ from inventory_report.reports.complete_report import CompleteReport
 
 
 def process_report_request(file_paths: List[str], report_type: str) -> str:
-    """
-    Process the report given a list of file paths and a report type,
-    and returns the result.
-    """
+    if report_type not in ["simple", "complete"]:
+        raise ValueError("Report type is invalid.")
+
     data = []
     for file_path in file_paths:
         if file_path.endswith(".json"):
@@ -19,13 +18,6 @@ def process_report_request(file_paths: List[str], report_type: str) -> str:
 
     inventory = Inventory(data)
 
-    if report_type == "simple":
-        report = SimpleReport()
-        report.add_inventory(inventory)
-        return report.generate()
-    elif report_type == "complete":
-        report = CompleteReport()
-        report.add_inventory(inventory)
-        return report.generate()
-    else:
-        raise ValueError("Report type is invalid.")
+    report = SimpleReport() if report_type == "simple" else CompleteReport()
+    report.add_inventory(inventory)
+    return report.generate()
